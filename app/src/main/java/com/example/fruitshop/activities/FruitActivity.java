@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -66,13 +68,20 @@ public class FruitActivity extends AppCompatActivity {
             lvFruits.setOnItemClickListener((p, view, pos, id) -> selectFruit(fruits.get(pos)));
         }
 
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) { }
+            @Override public void onTextChanged(CharSequence s, int st, int b, int c) { loadFruits(); }
+            @Override public void afterTextChanged(Editable s) { }
+        });
+
         loadFruits();
     }
 
     private void loadFruits() {
-        List<Fruit> all = db.searchFruits("");
+        List<Fruit> all = db.searchFruits(edtSearch.getText().toString().trim());
         fruits = new ArrayList<>();
         for (Fruit f : all) {
+            // Customers only see fruits that are in stock
             if (isAdmin || f.getQuantity() > 0) fruits.add(f);
         }
         lvFruits.setAdapter(new FruitAdapter());
