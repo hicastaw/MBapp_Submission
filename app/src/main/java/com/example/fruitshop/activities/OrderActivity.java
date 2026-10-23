@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fruitshop.R;
@@ -37,9 +39,12 @@ public class OrderActivity extends AppCompatActivity {
 
         tvSummary = findViewById(R.id.tvSummary);
         lvOrders = findViewById(R.id.lvOrders);
+        TextView tvHint = findViewById(R.id.tvHint);
 
         if (isAdmin) {
             setTitle("Quản lý đơn hàng");
+            tvHint.setText("Chạm vào một đơn để cập nhật trạng thái");
+            lvOrders.setOnItemClickListener((p, view, pos, id) -> showStatusDialog(orders.get(pos)));
         } else {
             setTitle("Lịch sử đơn hàng");
             customerId = db.getCustomerByAccountId(accountId).getId();
@@ -61,5 +66,16 @@ public class OrderActivity extends AppCompatActivity {
         }
         lvOrders.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, rows));
         tvSummary.setText("Số đơn: " + orders.size() + " - Tổng tiền: " + FruitActivity.formatMoney(total));
+    }
+
+    private void showStatusDialog(Order o) {
+        new AlertDialog.Builder(this)
+                .setTitle("Đơn #" + o.getId() + " (" + o.getStatus() + ")")
+                .setItems(Order.STATUSES, (d, which) -> {
+                    db.updateOrderStatus(o.getId(), Order.STATUSES[which]);
+                    Toast.makeText(this, "Đã cập nhật: " + Order.STATUSES[which], Toast.LENGTH_SHORT).show();
+                    loadOrders();
+                })
+                .show();
     }
 }
