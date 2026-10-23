@@ -26,6 +26,21 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "fullname TEXT, phone TEXT, email TEXT, accountId INTEGER)");
         db.execSQL("CREATE TABLE " + T_ORDER + "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "customerId INTEGER, orderDate TEXT, totalAmount REAL, status TEXT)");
+
+        // Sample data
+        db.execSQL("INSERT INTO Account(username, password, role) VALUES "
+                + "('admin', '123', 'ADMIN'), ('customer', '123', 'CUSTOMER'), ('customer2', '123', 'CUSTOMER')");
+        db.execSQL("INSERT INTO Customer(fullname, phone, email, accountId) VALUES "
+                + "('Nguyen Van A', '0901234567', 'a@gmail.com', 2), "
+                + "('Tran Thi B', '0912345678', 'b@gmail.com', 3)");
+        db.execSQL("INSERT INTO Fruit(name, category, price, quantity, expiryDate, description) VALUES "
+                + "('Tao My', 'Nhap khau', 80000, 50, '2027-06-30', 'Tao do gion ngot'), "
+                + "('Chuoi Tieu', 'Trong nuoc', 25000, 100, '2027-01-15', 'Chuoi chin vang'), "
+                + "('Cam Sanh', 'Trong nuoc', 40000, 30, '2025-12-01', 'Cam nhieu nuoc'), "
+                + "('Nho Xanh', 'Nhap khau', 150000, 20, '2027-03-10', 'Nho khong hat'), "
+                + "('Xoai Cat', 'Trong nuoc', 60000, 0, '2027-02-20', 'Xoai cat Hoa Loc')");
+        db.execSQL("INSERT INTO " + T_ORDER + "(customerId, orderDate, totalAmount, status) VALUES "
+                + "(1, '2026-10-20 09:30', 160000, 'Completed'), (1, '2026-10-22 14:00', 50000, 'Pending')");
     }
 
     @Override
