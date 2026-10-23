@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,12 @@ public class FruitActivity extends AppCompatActivity {
             findViewById(R.id.btnDelete).setOnClickListener(v -> deleteFruit());
             findViewById(R.id.btnClear).setOnClickListener(v -> clearForm());
             lvFruits.setOnItemClickListener((p, view, pos, id) -> selectFruit(fruits.get(pos)));
+        } else {
+            setTitle("Trái cây");
+            tvHint.setText("Chạm vào một trái cây để đặt hàng");
+            findViewById(R.id.layoutForm).setVisibility(View.GONE);
+            customerId = db.getCustomerByAccountId(accountId).getId();
+            lvFruits.setOnItemClickListener((p, view, pos, id) -> showOrderDialog(fruits.get(pos)));
         }
 
         edtSearch.addTextChangedListener(new TextWatcher() {
@@ -181,6 +188,40 @@ public class FruitActivity extends AppCompatActivity {
         edtExpiry.setText("");
         edtDescription.setText("");
         loadFruits();
+    }
+
+    // ===== CUSTOMER =====
+    private void showOrderDialog(Fruit f) {
+        if (f.isExpired()) {
+            toast(f.getName() + " đã hết hạn (" + f.getExpiryDate() + "), không thể đặt");
+            return;
+        }
+        EditText edtQty = new EditText(this);
+        edtQty.setInputType(InputType.TYPE_CLASS_NUMBER);
+        edtQty.setHint("Số lượng (còn " + f.getQuantity() + ")");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Đặt " + f.getName())
+                .setMessage("Giá: " + formatMoney(f.getPrice()) + "\nHạn sử dụng: " + f.getExpiryDate())
+                .setView(edtQty)
+                .setPositiveButton("Đặt hàng", (d, w) -> {
+                    int qty;
+                    try {
+                        qty = Integer.parseInt(edtQty.getText().toString().trim());
+                    } catch (NumberFormatException e) {
+                        toast("Số lượng không hợp lệ");
+                        return;
+                    }
+                    String error = db.placeOrder(customerId, f.getId(), qty);
+                    if (error != null) {
+                        toast(error);
+                    } else {
+                        toast("Đặt hàng thành công: " + formatMoney(f.getPrice() * qty));
+                        loadFruits();
+                    }
+                })
+                .setNegativeButton("Huỷ", null)
+                .show();
     }
 
     static String formatMoney(double amount) {
