@@ -1,8 +1,12 @@
 package com.example.fruitshop.dal;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.fruitshop.models.Account;
+import com.example.fruitshop.models.Customer;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "fruitshop.db";
@@ -50,5 +54,31 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS Fruit");
         db.execSQL("DROP TABLE IF EXISTS Account");
         onCreate(db);
+    }
+
+    // ===== Account =====
+    public Account login(String username, String password) {
+        Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, username, password, role FROM Account WHERE username = ? AND password = ?",
+                new String[]{username, password});
+        Account account = null;
+        if (c.moveToFirst()) {
+            account = new Account(c.getInt(0), c.getString(1), c.getString(2), c.getString(3));
+        }
+        c.close();
+        return account;
+    }
+
+    // ===== Customer =====
+    public Customer getCustomerByAccountId(int accountId) {
+        Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, fullname, phone, email, accountId FROM Customer WHERE accountId = ?",
+                new String[]{String.valueOf(accountId)});
+        Customer customer = null;
+        if (c.moveToFirst()) {
+            customer = new Customer(c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getInt(4));
+        }
+        c.close();
+        return customer;
     }
 }
