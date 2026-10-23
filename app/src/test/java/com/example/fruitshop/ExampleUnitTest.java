@@ -1,4 +1,4 @@
-package com.example.studentmanager;
+package com.example.fruitshop;
 
 import org.junit.Test;
 

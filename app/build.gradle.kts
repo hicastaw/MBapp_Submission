@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.studentmanager"
+    namespace = "com.example.fruitshop"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.studentmanager"
+        applicationId = "com.example.fruitshop"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

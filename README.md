@@ -10,7 +10,7 @@
 | Mục | Giá trị |
 |---|---|
 | Ngôn ngữ | Java (KHÔNG dùng Kotlin, KHÔNG dùng Compose) |
-| Package | `com.example.studentmanager` |
+| Package | `com.example.fruitshop` |
 | Database | SQLite (`SQLiteOpenHelper`), KHÔNG dùng Room |
 | Lưu đăng nhập | `SharedPreferences` |
 | Activity | `androidx.appcompat.app.AppCompatActivity` |
@@ -20,7 +20,7 @@
 ### Cấu trúc bắt buộc (theo Task 2 – KHÔNG đổi tên thư mục)
 
 ```
-app/src/main/java/com/example/studentmanager/
+app/src/main/java/com/example/fruitshop/
 ├── activities/
 │   ├── LoginActivity.java
 │   └── <ChucNang>Activity.java      (vd: ScoreActivity, FruitActivity, OrderActivity)
@@ -109,16 +109,16 @@ Mỗi model: các field đúng như cột trong đề, 1 constructor đủ tham 
 ```bash
 git checkout main && git pull && git checkout -b feature/models
 
-git add app/src/main/java/com/example/studentmanager/models/Account.java
+git add app/src/main/java/com/example/fruitshop/models/Account.java
 git commit -m "feat: add Account model with role constants"
 
-git add app/src/main/java/com/example/studentmanager/models/<Bang1>.java
+git add app/src/main/java/com/example/fruitshop/models/<Bang1>.java
 git commit -m "feat: add <Bang1> model"
 
-git add app/src/main/java/com/example/studentmanager/models/<Bang2>.java
+git add app/src/main/java/com/example/fruitshop/models/<Bang2>.java
 git commit -m "feat: add <Bang2> model"
 
-git add app/src/main/java/com/example/studentmanager/models/<Bang3>.java
+git add app/src/main/java/com/example/fruitshop/models/<Bang3>.java
 git commit -m "feat: add <Bang3> model"
 
 git push -u origin feature/models
@@ -126,7 +126,7 @@ git push -u origin feature/models
 
 Mẫu `Account.java`:
 ```java
-package com.example.studentmanager.models;
+package com.example.fruitshop.models;
 
 public class Account {
     public static final String ROLE_ADMIN = "ADMIN";   // đổi theo đề: TEACHER / STUDENT ...
@@ -154,19 +154,19 @@ public class Account {
 ```bash
 git checkout main && git pull && git checkout -b feature/database
 
-git add app/src/main/java/com/example/studentmanager/dal/DBHelper.java
+git add app/src/main/java/com/example/fruitshop/dal/DBHelper.java
 git commit -m "feat: create DBHelper with all tables"
 
-git add app/src/main/java/com/example/studentmanager/dal/DBHelper.java
+git add app/src/main/java/com/example/fruitshop/dal/DBHelper.java
 git commit -m "feat: add sample data for all tables"
 
-git add app/src/main/java/com/example/studentmanager/dal/DBHelper.java
+git add app/src/main/java/com/example/fruitshop/dal/DBHelper.java
 git commit -m "feat: add login query for Account"
 
-git add app/src/main/java/com/example/studentmanager/dal/DBHelper.java
+git add app/src/main/java/com/example/fruitshop/dal/DBHelper.java
 git commit -m "feat: add CRUD methods for <Bang1>"
 
-git add app/src/main/java/com/example/studentmanager/dal/DBHelper.java
+git add app/src/main/java/com/example/fruitshop/dal/DBHelper.java
 git commit -m "feat: add CRUD methods for <Bang2>"
 
 git push -u origin feature/database
@@ -186,16 +186,16 @@ git checkout main && git pull && git checkout -b feature/login
 git add app/src/main/res/layout/activity_login.xml
 git commit -m "feat: add login layout"
 
-git add app/src/main/java/com/example/studentmanager/activities/LoginActivity.java app/src/main/AndroidManifest.xml
+git add app/src/main/java/com/example/fruitshop/activities/LoginActivity.java app/src/main/AndroidManifest.xml
 git commit -m "feat: add LoginActivity and set it as launcher"
 
-git add app/src/main/java/com/example/studentmanager/activities/LoginActivity.java
+git add app/src/main/java/com/example/fruitshop/activities/LoginActivity.java
 git commit -m "feat: save login account with SharedPreferences"
 
-git add app/src/main/java/com/example/studentmanager/MainActivity.java app/src/main/res/layout/activity_main.xml
+git add app/src/main/java/com/example/fruitshop/MainActivity.java app/src/main/res/layout/activity_main.xml
 git commit -m "feat: show role-based menu in MainActivity"
 
-git add app/src/main/java/com/example/studentmanager/MainActivity.java
+git add app/src/main/java/com/example/fruitshop/MainActivity.java
 git commit -m "feat: add logout"
 
 git push -u origin feature/login
@@ -224,19 +224,19 @@ git checkout main && git pull && git checkout -b feature/<chuc-nang>
 git add app/src/main/res/layout/activity_<chuc_nang>.xml
 git commit -m "feat: add <chuc_nang> layout"
 
-git add app/src/main/java/com/example/studentmanager/activities/<ChucNang>Activity.java app/src/main/AndroidManifest.xml
+git add app/src/main/java/com/example/fruitshop/activities/<ChucNang>Activity.java app/src/main/AndroidManifest.xml
 git commit -m "feat: add <ChucNang>Activity with list view"
 
-git add app/src/main/java/com/example/studentmanager/activities/<ChucNang>Activity.java
+git add app/src/main/java/com/example/fruitshop/activities/<ChucNang>Activity.java
 git commit -m "feat: add create, update, delete for <role 1>"
 
-git add app/src/main/java/com/example/studentmanager/activities/<ChucNang>Activity.java
+git add app/src/main/java/com/example/fruitshop/activities/<ChucNang>Activity.java
 git commit -m "feat: add search"
 
-git add app/src/main/java/com/example/studentmanager/activities/<ChucNang>Activity.java
+git add app/src/main/java/com/example/fruitshop/activities/<ChucNang>Activity.java
 git commit -m "feat: add view-only mode for <role 2>"
 
-git add app/src/main/java/com/example/studentmanager/activities/<ChucNang>Activity.java
+git add app/src/main/java/com/example/fruitshop/activities/<ChucNang>Activity.java
 git commit -m "fix: validate input before saving"
 
 git push -u origin feature/<chuc-nang>
