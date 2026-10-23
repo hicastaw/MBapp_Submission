@@ -133,14 +133,30 @@ public class FruitActivity extends AppCompatActivity {
         edtDescription.setText(f.getDescription());
     }
 
+    /** Reads the form; returns null and shows a message when input is invalid. */
     private Fruit readForm(int id) {
         String name = edtName.getText().toString().trim();
         String category = edtCategory.getText().toString().trim();
-        double p = Double.parseDouble(edtPrice.getText().toString().trim());
-        int q = Integer.parseInt(edtQuantity.getText().toString().trim());
+        String price = edtPrice.getText().toString().trim();
+        String quantity = edtQuantity.getText().toString().trim();
         String expiry = edtExpiry.getText().toString().trim();
         String description = edtDescription.getText().toString().trim();
-        return new Fruit(id, name, category, p, q, expiry, description);
+        if (name.isEmpty() || category.isEmpty() || price.isEmpty() || quantity.isEmpty() || expiry.isEmpty()) {
+            toast("Vui lòng nhập đủ tên, loại, giá, số lượng, hạn sử dụng");
+            return null;
+        }
+        try {
+            double p = Double.parseDouble(price);
+            int q = Integer.parseInt(quantity);
+            if (p < 0 || q < 0) {
+                toast("Giá và số lượng không được âm");
+                return null;
+            }
+            return new Fruit(id, name, category, p, q, expiry, description);
+        } catch (NumberFormatException e) {
+            toast("Giá hoặc số lượng không hợp lệ");
+            return null;
+        }
     }
 
     private void addFruit() {
