@@ -9,9 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.fruitshop.models.Account;
 import com.example.fruitshop.models.Customer;
 import com.example.fruitshop.models.Fruit;
+import com.example.fruitshop.models.Order;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "fruitshop.db";
@@ -139,5 +143,67 @@ public class DBHelper extends SQLiteOpenHelper {
         v.put("expiryDate", f.getExpiryDate());
         v.put("description", f.getDescription());
         return v;
+    }
+
+    // ===== Order =====
+    /**
+     * Places an order for one fruit: checks expiry and stock, reduces stock, inserts the order.
+     * Returns null on success, otherwise an error message.
+     */
+    public String placeOrder(int customerId, int fruitId, int quantity) {
+        Fruit fruit = getFruitById(fruitId);
+        if (fruit == null) return "Không tìm thấy trái cây";
+        if (fruit.isExpired()) return "Trái cây đã hết hạn, không thể đặt";
+        if (quantity <= 0) return "Số lượng phải lớn hơn 0";
+        if (quantity > fruit.getQuantity()) return "Không đủ hàng (còn " + fruit.getQuantity() + ")";
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            ContentValues stock = new ContentValues();
+            stock.put("quantity", fruit.getQuantity() - quantity);
+            db.update("Fruit", stock, "id = ?", new String[]{String.valueOf(fruitId)});
+
+            ContentValues order = new ContentValues();
+            order.put("customerId", customerId);
+            order.put("orderDate", new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(new Date()));
+            order.put("totalAmount", fruit.getPrice() * quantity);
+            order.put("status", Order.STATUS_PENDING);
+            db.insert(T_ORDER, null, order);
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return null;
+    }
+
+    public List<Order> getAllOrders() {
+        return queryOrders("", null);
+    }
+
+    public List<Order> getOrdersByCustomer(int customerId) {
+        return queryOrders("WHERE o.customerId = ? ", new String[]{String.valueOf(customerId)});
+    }
+
+    private List<Order> queryOrders(String where, String[] args) {
+        List<Order> list = new ArrayList<>();
+        Cursor c = getReadableDatabase().rawQuery(
+                "SELECT o.id, o.customerId, o.orderDate, o.totalAmount, o.status, c.fullname "
+                        + "FROM " + T_ORDER + " o LEFT JOIN Customer c ON o.customerId = c.id "
+                        + where + "ORDER BY o.id DESC", args);
+        while (c.moveToNext()) {
+            Order o = new Order(c.getInt(0), c.getInt(1), c.getString(2), c.getDouble(3), c.getString(4));
+            o.setCustomerName(c.getString(5));
+            list.add(o);
+        }
+        c.close();
+        return list;
+    }
+
+    public int updateOrderStatus(int orderId, String status) {
+        ContentValues v = new ContentValues();
+        v.put("status", status);
+        return getWritableDatabase().update(T_ORDER, v, "id = ?", new String[]{String.valueOf(orderId)});
     }
 }
