@@ -1,5 +1,6 @@
 package com.example.fruitshop.dal;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.fruitshop.models.Account;
 import com.example.fruitshop.models.Customer;
+import com.example.fruitshop.models.Fruit;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "fruitshop.db";
@@ -80,5 +85,59 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         c.close();
         return customer;
+    }
+
+    // ===== Fruit =====
+    /** keyword matches name or category; empty keyword returns all. */
+    public List<Fruit> searchFruits(String keyword) {
+        List<Fruit> list = new ArrayList<>();
+        String like = "%" + keyword + "%";
+        Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, name, category, price, quantity, expiryDate, description FROM Fruit "
+                        + "WHERE name LIKE ? OR category LIKE ? ORDER BY name",
+                new String[]{like, like});
+        while (c.moveToNext()) {
+            list.add(readFruit(c));
+        }
+        c.close();
+        return list;
+    }
+
+    public Fruit getFruitById(int id) {
+        Cursor c = getReadableDatabase().rawQuery(
+                "SELECT id, name, category, price, quantity, expiryDate, description FROM Fruit WHERE id = ?",
+                new String[]{String.valueOf(id)});
+        Fruit fruit = c.moveToFirst() ? readFruit(c) : null;
+        c.close();
+        return fruit;
+    }
+
+    private Fruit readFruit(Cursor c) {
+        return new Fruit(c.getInt(0), c.getString(1), c.getString(2), c.getDouble(3),
+                c.getInt(4), c.getString(5), c.getString(6));
+    }
+
+    public long insertFruit(Fruit f) {
+        return getWritableDatabase().insert("Fruit", null, toValues(f));
+    }
+
+    public int updateFruit(Fruit f) {
+        return getWritableDatabase().update("Fruit", toValues(f), "id = ?",
+                new String[]{String.valueOf(f.getId())});
+    }
+
+    public int deleteFruit(int id) {
+        return getWritableDatabase().delete("Fruit", "id = ?", new String[]{String.valueOf(id)});
+    }
+
+    private ContentValues toValues(Fruit f) {
+        ContentValues v = new ContentValues();
+        v.put("name", f.getName());
+        v.put("category", f.getCategory());
+        v.put("price", f.getPrice());
+        v.put("quantity", f.getQuantity());
+        v.put("expiryDate", f.getExpiryDate());
+        v.put("description", f.getDescription());
+        return v;
     }
 }
